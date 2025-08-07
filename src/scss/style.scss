@@ -1,0 +1,35 @@
+body {
+    background: rgb(121, 32, 47) url(../img/1.png);
+    display: flex;
+}
+
+@media (hover: hover) {
+  abbr:hover {
+    color: #001ca8;
+    transition-duration: 0.5s;
+  }
+}
+
+@media not all and (hover: hover) {
+  abbr::after {
+    content: " (" attr(title) ")";
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: lightblue;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    color:rgb(121, 32, 47)
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    font-weight: bold;
+  }
+}

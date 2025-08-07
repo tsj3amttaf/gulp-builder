@@ -10,6 +10,26 @@
   "author": "tsj3amttaf",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^5.0.1"
+    "browser-sync": "^3.0.4",
+    "del": "^8.0.0",
+    "gulp": "^5.0.1",
+    "gulp-autoprefixer": "^9.0.0",
+    "gulp-file-include": "^2.3.0",
+    "gulp-group-css-media-queries": "^1.2.2",
+    "gulp-imagemin": "^9.1.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-notify": "^5.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.1.0",
+    "gulp-sass": "^6.0.1",
+    "gulp-version-number": "^0.2.4",
+    "gulp-webp": "^5.0.0",
+    "gulp-webp-css-fixed": "^1.1.0",
+    "gulp-webp-html-nosvg": "^1.1.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^10.0.0",
+    "sass": "^1.90.0",
+    "webpack": "^5.101.0",
+    "webpack-stream": "^7.0.0"
   }
 }
