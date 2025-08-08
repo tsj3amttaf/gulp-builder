@@ -1,4 +1,8 @@
 /*
+    Долги:
+        1. SVG картинки, копируются ли вместе с папкой Icons
+        2. Sass и @import
+
     В Gulp 5 не работают плагины:
         1. gulp-fonter-2
         2. gulp-fontfacegen-mod
@@ -115,6 +119,7 @@ import { scss }     from './core/tasks/scss.js';
 import { js }       from './core/tasks/js.js';
 import { images }   from './core/tasks/images.js';
 import { otfToTtf, ttfToWoffAndAll, fontStyle } from './core/tasks/fonts.js';
+import { svg }      from './core/tasks/svg.js';
 
 // Наблюдатель за изменениями в файлах
 function watcher() {
@@ -123,7 +128,7 @@ function watcher() {
     gulp.watch( path.watch.scss, scss );
     gulp.watch( path.watch.js, js );
     gulp.watch( path.watch.images, images );
-    // gulp.watch( path.watch.svgIco, svg );
+    gulp.watch( path.watch.svg, svg );
 }
 
 /*
@@ -146,7 +151,7 @@ const mainTasks = gulp.series(
         images
     ),
 
-    /*svg*/
+    svg
 );
 
 // Константа для выполнения сценария по умолчанию (gulp - в терминале)

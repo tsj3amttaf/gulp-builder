@@ -1,3 +1,6 @@
+
+@import 'fonts.scss';
+
 body {
     background: rgb(121, 32, 47) url(../img/1.png);
     display: flex;
@@ -5,7 +8,7 @@ body {
 
 @media (hover: hover) {
   abbr:hover {
-    color: #001ca8;
+    color: #420808;
     transition-duration: 0.5s;
   }
 }
