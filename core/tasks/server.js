@@ -18,6 +18,7 @@ export const server = (done) => {
         server: {
             baseDir: `${app.path.build.html}`
         },
+        open: false,
         //notify: false,
         //port: 3000
     } )

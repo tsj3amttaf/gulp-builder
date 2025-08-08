@@ -1,0 +1,27 @@
+@font-face {
+	font-family: '1';
+	font-style: normal;
+	font-weight: 400;
+	src: local(''),
+	url("./dist/fonts/CinderelaPersonalUseRegular-RDvM.woff2") format("woff2"),
+	url("./dist/fonts/CinderelaPersonalUseRegular-RDvM.woff") format("woff");
+	font-display: swap;
+}
+@font-face {
+	font-family: '2';
+	font-style: normal;
+	font-weight: 400;
+	src: local(''),
+	url("./dist/fonts/HappySwirly-KVB7l.woff2") format("woff2"),
+	url("./dist/fonts/HappySwirly-KVB7l.woff") format("woff");
+	font-display: swap;
+}
+@font-face {
+	font-family: '3';
+	font-style: normal;
+	font-weight: 900;
+	src: local(''),
+	url("./dist/fonts/Montserrat-Black.woff2") format("woff2"),
+	url("./dist/fonts/Montserrat-Black.woff") format("woff");
+	font-display: swap;
+}

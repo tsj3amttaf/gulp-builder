@@ -1,6 +1,74 @@
 /*
+    В Gulp 5 не работают плагины:
+        1. gulp-fonter-2
+        2. gulp-fontfacegen-mod
+        3. imagemin-webp (как и на 4 версии, дело скорее всего в другом)
+        4. 
+
     Запуск сборки для разработки, командой в терминале: gulp.
-    (HTML, CSS, Images, Files, Watcher, Browser-sync, Fonts, )
+    (
+        HTML
+            1. Сборка в один файл из сегментов
+               Документация: https://github.com/haoxins/gulp-file-include
+            2. Обертка <picture> для <img>, оригинальный формат и webp
+            3. Указывает версию для CSS и JS файлов, тем самым
+               предотвращая кэширование на стороне клиента.
+               Теперь не придётся просить чистить кэш у заказчика.
+               Документация: https://www.npmjs.com/package/gulp-version-number
+        
+        CSS
+            1. Препроцессор SASS
+                1.1. Sourcemap
+                1.2. Сжатие
+            2. @support в CSS файл для webp изображений в CSS
+            3. Группировка @media в итоговом CSS файле
+            4. Префиксы для работы в старых браузерах.
+               Документация: https://github.com/postcss/autoprefixer#options
+            5. Смена имени style.css на style.min.css
+
+        Images
+            1. Конвертация в Webp
+            2. Сжатие Png, Gif, Jpg и Jpeg
+            3. Перемещение в папку dist:
+                - jpg, jpeg, png, gif, webp, svg
+
+        Fonts
+            1. Конвертация из otf в ttf
+            2. Конвертация из ttf в woff и woff2
+            3. Запись шрифтов в файл src/scss/fonts.scss
+                - удаляя fonts.scss, плагин начнет формировать список шрифтов
+                  заного, в остальных случаях, запись в файл приостанавливается,
+                  чтобы можно было спокойно редактировать fonts.scss без изменений
+                  во время работы gulp
+
+        Files
+            Перемещение любых файлов в папке Files в готовую сборку
+
+        Watcher
+            Наблюдение за изменениями в файлах:
+             - HTML
+             - SCSS / CSS
+             - JS
+             - Images
+             - Files
+
+        Browser-sync
+            Запуск сервера для просмотра изменений в файлах с помощью
+            watcher в браузере:
+             - HTML   (core/tasks/html.js)
+             - CSS    (core/tasks/scss.js)
+             - JS     (core/tasks/js.js)
+             - Images (core/tasks/images.js)
+
+        Оповещение об ошибках в коде:
+             - HTML   (core/tasks/html.js)
+             - CSS    (core/tasks/scss.js)
+             - JS     (core/tasks/js.js)
+             - Images (core/tasks/images.js)
+             - Fonts  (core/tasks/fonts.js)
+
+        
+    )
 */
 
 // Подключаю основной модуль
@@ -39,13 +107,14 @@ global.app = {
 }
 
 // Импорт задач
-import { reset }  from './core/tasks/reset.js';
-import { copy }   from './core/tasks/copy.js';
-import { html }   from './core/tasks/html.js';
-import { server } from './core/tasks/server.js';
-import { scss }   from './core/tasks/scss.js';
-import { js }     from './core/tasks/js.js';
-import { images } from './core/tasks/images.js';
+import { reset }    from './core/tasks/reset.js';
+import { copy }     from './core/tasks/copy.js';
+import { html }     from './core/tasks/html.js';
+import { server }   from './core/tasks/server.js';
+import { scss }     from './core/tasks/scss.js';
+import { js }       from './core/tasks/js.js';
+import { images }   from './core/tasks/images.js';
+import { otfToTtfAndAll, ttfToWoff, fontStyle } from './core/tasks/fonts.js';
 
 // Наблюдатель за изменениями в файлах
 function watcher() {
@@ -62,13 +131,10 @@ function watcher() {
 */
 
 // Основные задачи
-const mainTasks = gulp.series( /*fonts,*/ gulp.parallel( copy, html, scss, js, images ), /*svg*/ );
-
-// Запуск сервера и наблюдателя
-const serverWatcher = gulp.parallel( watcher, server );
+const mainTasks = gulp.series( otfToTtfAndAll, ttfToWoff, fontStyle, gulp.parallel( copy, html, scss, js, images ), /*svg*/ );
 
 // Константа для выполнения сценария по умолчанию (gulp - в терминале)
-const dev = gulp.series( reset, mainTasks, serverWatcher );
+const dev = gulp.series( reset, mainTasks, gulp.parallel( watcher, server ) );
 
 /*
     Выполнение сценариев

@@ -1,13 +1,18 @@
-// Импортирую плагины
+// Конвертация в webp
 import webpImg from 'gulp-webp';
+
+// Сжатие изображений
 import imagemin from 'gulp-imagemin';
 
 /*
-    Есть ещё плагины, для Gif, SVG, Webp, но они работают только если
-    откатывать imagemin до 7 версии.
+    Есть ещё плагины для SVG и Webp, но они не работают.
+    Я откатил imagemin с 9 версии до 8, и заработал плагин imagemin-gifsicle.
+    При этом я так же перешел с gulp 5 на 4 версию, так что не понятно,
+    что от чего зависит.
 */
 import imageminPngquant from 'imagemin-pngquant';
 import imageminMozjpeg from 'imagemin-mozjpeg';
+import imageminGifsicle from 'imagemin-gifsicle';
 
 /*
     Выполз нюанс.
@@ -46,28 +51,23 @@ export const images = () => {
     // // Определяем путь для исходных изображений
     .pipe( app.gulp.src( app.path.src.images, { encoding: false } ) )
 
-    // // Предотвращает сборку уже обработанных изображений
+    // // Предотвращает обработку уже обработанных изображений
     .pipe( app.plugins.newer( app.path.build.images ) )
 
     // // Сжимаем картинки
     .pipe(
         imagemin( [
             imageminPngquant( { quality: [ 0.6, 0.85 ] } ),
-            imageminMozjpeg( { quality: 50 } )
+            imageminMozjpeg( { quality: 50 } ),
+            imageminGifsicle( { optimizationLevel: 3 } ),
         ], {
+
+            // Показывать прогресс сжатия каждого изображения
             verbose: true
         } )
     )
 
     // Перемещаем в папку с результатом, но это ещё не всё...
-    .pipe( app.gulp.dest( app.path.build.images ) )
-
-    /*
-        Получаем путь к svg исходникам
-        и копируем в папку с результатом
-    */
-
-    .pipe( app.gulp.src( app.path.src.svg ) )
     .pipe( app.gulp.dest( app.path.build.images ) )
 
     // Обновляем изменения в браузере на лету

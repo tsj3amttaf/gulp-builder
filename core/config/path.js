@@ -16,12 +16,12 @@ export const path = {
 
     // Собрать в папке "dist"
     build: {
-        html:   `${buildFolder}/`,
-        files:  `${buildFolder}/files/`,
-        css:    `${buildFolder}/css/`,
-        js:     `${buildFolder}/js/`,
-        images: `${buildFolder}/img/`,
-        fonts:  `${buildFolder}/fonts/`,
+        html:       `${buildFolder}/`,
+        files:      `${buildFolder}/files/`,
+        css:        `${buildFolder}/css/`,
+        js:         `${buildFolder}/js/`,
+        images:     `${buildFolder}/img/`,
+        fonts:      `${buildFolder}/fonts/`,
     },
 
     // Исходники из папки "src"
@@ -30,9 +30,9 @@ export const path = {
         files:  `${srcFolder}/files/**/*.*`,
         scss:   `${srcFolder}/scss/style.scss`,
         js:     `${srcFolder}/js/scripts.js`,
-        images: `${srcFolder}/img/**/*.{jpg,jpeg,png,gif,webp}`,
-        svg:    `${srcFolder}/img/**/*.svg`,
-        // fonts:  `${srcFolder}/fonts/`,
+        images: `${srcFolder}/img/**/*.{jpg,jpeg,png,gif,webp,svg}`,
+        //svg:    `${srcFolder}/img/**/*.svg`,
+        fonts:  `${srcFolder}/fonts/*.{ttf,otf}`,
         // svgIco: `${srcFolder}/icons/*.svg`,
     },
 
@@ -49,7 +49,7 @@ export const path = {
         files:  `${srcFolder}/files/**/*.*`,
         scss:   `${srcFolder}/scss/**/*.scss`,
         js:     `${srcFolder}/js/**/*.js`,
-        images: `${srcFolder}/img/**/*.{jpg,jpeg,png,gif,webp}`,
+        images: `${srcFolder}/img/**/*.{jpg,jpeg,png,gif,webp,svg}`,
         // svgIco: `${srcFolder}/icons/**/*.svg`
     },
 
