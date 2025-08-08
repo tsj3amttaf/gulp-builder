@@ -13,10 +13,10 @@ import fontface from 'gulp-fontfacegen-mod';
     Переносит в dist не требующие конвертации woff и woff2
 */
 
-export const otfToTtfAndAll = () => {
+export const otfToTtf = () => {
 
     // Получаем путь до исходников в папке src/fonts
-    return app.gulp.src( app.path.src.fonts )
+    return app.gulp.src( `${app.path.src.fonts}*.otf`, {} )
 
     // Добавляем уведомление об ошибке
     .pipe(
@@ -35,13 +35,7 @@ export const otfToTtfAndAll = () => {
         Кладём в туже папку где и брали (src/fonts) для дальнейшей конвнертации
         в woff и woff2
     */
-    .pipe( app.gulp.dest( `${app.path.srcFolder}/fonts/` ) )
-
-    // Ищем шрифты, которые не нужно конвертировать
-    .pipe( app.gulp.src( `${app.path.srcFolder}/fonts/*.{woff,woff2}`, {} ) )
-
-    // Переносим шрифты которые не нужно конвертировать
-    .pipe( app.gulp.dest( app.path.build.fonts ) )
+    .pipe( app.gulp.dest( app.path.src.fonts ) )
 }
 
 /*
@@ -49,10 +43,10 @@ export const otfToTtfAndAll = () => {
     Предыдущая задача конвертирует otf в ttf и помещает в ту же папку src/fonts,
     а эта задача берет этот конвертированный ttf и превращает его в woff и в woff2.
 */
-export const ttfToWoff = () => {
+export const ttfToWoffAndAll = () => {
 
-    // Получаем путь до исходников
-    return app.gulp.src( app.path.src.fonts )
+    // Получаем путь до исходников в папке src/fonts
+    return app.gulp.src( `${app.path.src.fonts}*.ttf`, {} )
 
     // Добавляем уведомление об ошибке
     .pipe(
@@ -71,12 +65,18 @@ export const ttfToWoff = () => {
     .pipe( app.gulp.dest( app.path.build.fonts ) )
 
     // Ищем файлы для следующей конвертации из ttf в woff2
-    .pipe( app.gulp.src( app.path.src.fonts ) )
+    .pipe( app.gulp.src( `${app.path.src.fonts}*.ttf`, {} ) )
 
     // Конвертируем в woff2
     .pipe( ttf2woff2() )
 
     // Выгружаем в папку с результатом dist/fonts
+    .pipe( app.gulp.dest( app.path.build.fonts ) )
+
+    // Ищем шрифты, которые не нужно конвертировать
+    .pipe( app.gulp.src( `${app.path.src.fonts}*.{woff,woff2}`, {} ) )
+
+    // Переносим шрифты которые не нужно конвертировать
     .pipe( app.gulp.dest( app.path.build.fonts ) )
 }
 
@@ -96,7 +96,9 @@ export const fontStyle = () => {
             filename: 'fonts.scss',
 
             // dist/fonts
-            destpath: `${app.path.buildFolder}/fonts`,
+            destpath: app.path.build.fonts,
+
+            // https://www.npmjs.com/package/gulp-fontfacegen-mod
             rewrite: 'skip'
         } )
     )

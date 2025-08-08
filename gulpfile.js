@@ -114,7 +114,7 @@ import { server }   from './core/tasks/server.js';
 import { scss }     from './core/tasks/scss.js';
 import { js }       from './core/tasks/js.js';
 import { images }   from './core/tasks/images.js';
-import { otfToTtfAndAll, ttfToWoff, fontStyle } from './core/tasks/fonts.js';
+import { otfToTtf, ttfToWoffAndAll, fontStyle } from './core/tasks/fonts.js';
 
 // Наблюдатель за изменениями в файлах
 function watcher() {
@@ -131,7 +131,23 @@ function watcher() {
 */
 
 // Основные задачи
-const mainTasks = gulp.series( otfToTtfAndAll, ttfToWoff, fontStyle, gulp.parallel( copy, html, scss, js, images ), /*svg*/ );
+const mainTasks = gulp.series(
+
+    otfToTtf,
+    ttfToWoffAndAll,
+    fontStyle,
+
+    gulp.parallel(
+
+        copy,
+        html,
+        scss,
+        js,
+        images
+    ),
+
+    /*svg*/
+);
 
 // Константа для выполнения сценария по умолчанию (gulp - в терминале)
 const dev = gulp.series( reset, mainTasks, gulp.parallel( watcher, server ) );
