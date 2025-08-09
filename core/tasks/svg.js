@@ -25,8 +25,15 @@ export const svg = () => {
     .pipe(
         svgSprite( { mode: { stack: {
             sprite: `../svg/icons.svg`,
-            example: true
-            // example: app.isDev
+
+            /*
+                Формируется html файл в папке img/svg/stack для предпросмотра svg
+                изображений. Так же указывается условие выполнения этой задачи:
+                если сборка для разработки (terminal: gulp), то этот файл
+                формируется, если нет, то формируется лишь svg файл.
+            */
+
+            example: app.ifDev // gulp: true, gulp --prod: false
         } } } )
     )
 

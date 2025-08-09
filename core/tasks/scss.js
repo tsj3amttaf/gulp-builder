@@ -24,8 +24,8 @@ export const scss = () => {
     // Получаем путь до исходников
     return app.gulp.src( app.path.src.scss, {
         
-        // sourcemap: app.isDev
-        sourcemap: true
+        // Если нет флага --prod для gulp, то включим карту
+        sourcemap: app.ifDev
     } )
 
     // Добавляем уведомление об ошибке
@@ -42,7 +42,15 @@ export const scss = () => {
     .pipe( webpCss() )
 
     // Группируем @media в итоговом CSS файле
-    .pipe( groupCssMediaQueries() )
+    .pipe(
+
+        // Включим группировку только для сборки в продакшен
+        app.plugins.if(
+            app.ifProd,
+            
+            groupCssMediaQueries()
+        )
+    )
 
     // Добавляет префиксы для работы в старых браузерах
     .pipe(
@@ -55,8 +63,10 @@ export const scss = () => {
 
     // Osas
     .pipe(
+
+        // Если gulp в режиме продакшена, то css сжимается
         sass( {
-            //style: 'compressed'
+            style: app.ifProd ? 'compressed' : 'expanded'
         } )
     )
 

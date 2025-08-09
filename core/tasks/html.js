@@ -47,21 +47,27 @@ export const html = () => {
 
     // Добавляет версию css и js для заказчика
     .pipe(
-        versionNumber( {
-            'value': '%DT%', // Дата и время
-            'append': {
-                'key': '_v',
-                'cover': 0,
-                'to': [
-                    'css',
-                    'js'
-                ]
-            },
 
-            'output': {
-                'file': 'core/version.json'
-            }
-        } )
+        // Если сборка под продакшн, то формируется версия для js и css
+        app.plugins.if(
+            app.ifProd,
+
+            versionNumber( {
+                'value': '%DT%', // Дата и время
+                'append': {
+                    'key': '_v',
+                    'cover': 0,
+                    'to': [
+                        'css',
+                        'js'
+                    ]
+                },
+
+                'output': {
+                    'file': 'core/version.json'
+                }
+            } )
+        )
     )
 
     // Копируем в папку со сборкой

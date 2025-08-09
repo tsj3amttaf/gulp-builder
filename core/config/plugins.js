@@ -21,8 +21,8 @@ import browsersync from 'browser-sync';
 // Обрабатываем только те файлы, которых нет в папке dist
 import newer from 'gulp-newer';
 
-// Указываем условия внутри функций, для разделения задач на "dev" и "prod"
-//import ifPlugin from 'gulp-if';
+// Добавляет логику/условия для выполнения задач (например dev или production)
+import ifPlugin from 'gulp-if';
 
 // Экспортируем плагины
 export const plugins = {
@@ -31,5 +31,5 @@ export const plugins = {
     notify:      notify,
     browsersync: browsersync,
     newer:       newer,
-    // if:          ifPlugin
+    if:          ifPlugin
 }

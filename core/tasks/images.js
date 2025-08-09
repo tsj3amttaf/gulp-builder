@@ -10,6 +10,7 @@ import imagemin from 'gulp-imagemin';
     При этом я так же перешел с gulp 5 на 4 версию, так что не понятно,
     что от чего зависит.
 */
+
 import imageminPngquant from 'imagemin-pngquant';
 import imageminMozjpeg from 'imagemin-mozjpeg';
 import imageminGifsicle from 'imagemin-gifsicle';
@@ -27,6 +28,7 @@ export const images = () => {
         {encoding: false} - предотвращает поломку изображений.
         Ресурс: https://stackoverflow.com/questions/78391263/copying-images-with-gulp-are-corrupted-damaged
     */
+   
     return app.gulp.src( app.path.src.images, { encoding: false } )
 
     // Добавляем уведомление об ошибке
@@ -45,10 +47,10 @@ export const images = () => {
     // Конвертируем png, jpeg, jpg и tiff в webp
     .pipe( webpImg() )
 
-    // Переносим конвертированые webp в dist
+    // Переносим конвертированые webp в dist/img
     .pipe( app.gulp.dest( app.path.build.images ) )
 
-    // // Определяем путь для исходных изображений
+    // // Определяем путь остальных изображений для сжатия и переноса в dist/img
     .pipe( app.gulp.src( app.path.src.images, { encoding: false } ) )
 
     // // Предотвращает обработку уже обработанных изображений
@@ -56,15 +58,21 @@ export const images = () => {
 
     // // Сжимаем картинки
     .pipe(
-        imagemin( [
-            imageminPngquant( { quality: [ 0.6, 0.85 ] } ),
-            imageminMozjpeg( { quality: 50 } ),
-            imageminGifsicle( { optimizationLevel: 3 } ),
-        ], {
 
-            // Показывать прогресс сжатия каждого изображения
-            verbose: true
-        } )
+        // Если сборка под продакшн, то изображения сжимаются
+        app.plugins.if(
+            app.ifProd,
+            
+            imagemin( [
+                imageminPngquant( { quality: [ 0.6, 0.85 ] } ),
+                imageminMozjpeg( { quality: 50 } ),
+                imageminGifsicle( { optimizationLevel: 3 } ),
+            ], {
+
+                // Показывать прогресс сжатия каждого изображения
+                verbose: true
+            } )
+        )
     )
 
     // Перемещаем в папку с результатом

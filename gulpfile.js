@@ -1,16 +1,17 @@
 /*
-    Долги:
-        1. SVG картинки, копируются ли вместе с папкой Icons
-        2. Sass и @import
+    Команды:
+        - gulp
+        - gulp p
+        - gulp p --zip
+        - gulp p --server
 
     В Gulp 5 не работают плагины:
         1. gulp-fonter-2
         2. gulp-fontfacegen-mod
         3. imagemin-webp (как и на 4 версии, дело скорее всего в другом)
-        4. 
+        4. imagemin-svgo
 
     Запуск сборки для разработки, командой в терминале: gulp.
-    (
         HTML
             1. Сборка в один файл из сегментов
                Документация: https://github.com/haoxins/gulp-file-include
@@ -41,7 +42,7 @@
             2. Конвертация из ttf в woff и woff2
             3. Запись шрифтов в файл src/scss/fonts.scss
                 - удаляя fonts.scss, плагин начнет формировать список шрифтов
-                  заного, в остальных случаях, запись в файл приостанавливается,
+                  заново, в остальных случаях, запись в файл приостанавливается,
                   чтобы можно было спокойно редактировать fonts.scss без изменений
                   во время работы gulp
 
@@ -64,15 +65,45 @@
              - JS     (core/tasks/js.js)
              - Images (core/tasks/images.js)
 
-        Оповещение об ошибках в коде:
-             - HTML   (core/tasks/html.js)
-             - CSS    (core/tasks/scss.js)
-             - JS     (core/tasks/js.js)
-             - Images (core/tasks/images.js)
-             - Fonts  (core/tasks/fonts.js)
+    Логика использования:
+        1. Gulp Development - для разработки
+            JS:
+                sourcemap: true
+                mode: development (uncompress)
+
+            SVG:
+                create example html file: true
+
+            HTML:
+                version number for css and js: false
+
+            IMAGES:
+                comress images: false
+
+            SCSS:
+                sourcemap: true
+                media group: false
+                compress: false
 
         
-    )
+        2. Gulp Production - для заказчика
+            JS:
+                sourcemap: false
+                mode: production (compress)
+
+            SVG:
+                create example html file: false
+
+            HTML:
+                version number for css and js: true
+                
+            IMAGES:
+                comress images: true
+
+            SCSS:
+                sourcemap: false
+                media group: true
+                compress: true
 */
 
 // Подключаю основной модуль
@@ -84,26 +115,24 @@ import { path } from './core/config/path.js';
 // Импорт плагинов
 import { plugins } from './core/config/plugins.js';
 
-// Передаём значения в глобальную переменную, чтобы использовать её в любых документах нашей сборки
+/*
+    Передаём значения в глобальную переменную, чтобы использовать их в
+    любых документах нашей сборки.
+*/
+
 global.app = {
 
-    /*
-        Добавляет флаг к команде `gulp` в терминале, для сборки под продакшн.
+    // terminal: gulp prod (сборка под продакшн)
+    ifProd: process.argv.includes( 'p' ),
 
-        .. Добаляет в сборку webp (html, css, images), сжатие изображений,
-        .. группировка @media в css, префиксы для браузеров в css, 
-    */
-
-    //isProd:  process.argv.includes( 'prod' ),
-
-    // Можно в функциях использовать !isProd, но так проще читать код
-    //isDev:   !process.argv.includes( 'prod' ),
-
-    // Если нужно посмотреть на готовый результ под продакш с помощью сервера
-    //watch:   process.argv[3] == '--server',
+    // terminal: gulp
+    ifDev: !process.argv.includes( 'p' ),
 
     // Упаковываем в ZIP
-    //zip:     process.argv[3] == '--zip',
+    ifZip: process.argv[3] == '--zip',
+
+    // Запускаем browser-sync
+    ifServer: process.argv[3] == '--server',
 
     path:    path,
     gulp:    gulp,
@@ -120,15 +149,16 @@ import { js }       from './core/tasks/js.js';
 import { images }   from './core/tasks/images.js';
 import { otfToTtf, ttfToWoffAndAll, fontStyle } from './core/tasks/fonts.js';
 import { svg }      from './core/tasks/svg.js';
+import { zip }      from './core/tasks/zip.js';
 
 // Наблюдатель за изменениями в файлах
 function watcher() {
-    gulp.watch( path.watch.files, copy );
-    gulp.watch( path.watch.html, html );
-    gulp.watch( path.watch.scss, scss );
-    gulp.watch( path.watch.js, js );
+    gulp.watch( path.watch.files,  copy );
+    gulp.watch( path.watch.html,   html );
+    gulp.watch( path.watch.scss,   scss );
+    gulp.watch( path.watch.js,     js );
     gulp.watch( path.watch.images, images );
-    gulp.watch( path.watch.svg, svg );
+    gulp.watch( path.watch.svg,    svg );
 }
 
 /*
@@ -154,12 +184,62 @@ const mainTasks = gulp.series(
     svg
 );
 
-// Константа для выполнения сценария по умолчанию (gulp - в терминале)
-const dev = gulp.series( reset, mainTasks, gulp.parallel( watcher, server ) );
-
 /*
     Выполнение сценариев
 */
 
-// Выполнение сценария по умолчанию (gulp - в терминале)
-gulp.task( 'default', dev );
+// Выполнение сценария по умолчанию (в терминале: gulp)
+gulp.task(
+
+    'default',
+
+    gulp.series(
+
+        reset,
+        mainTasks,
+        gulp.parallel(
+            
+            watcher,
+            server
+        )
+    )
+);
+
+/*
+    Небольшой костыль, чтобы сократить количество кода.
+    if внутри task отказывается работать, даже с помощью плагина gulp-if
+*/
+
+function ifCond(cb) {
+
+    if( app.ifZip ) {
+
+        zip()
+
+    } else if( app.ifServer ) {
+
+        watcher(),
+        server()
+
+    }
+
+    cb();
+}
+
+/*
+    Выполнение сценария для продакшена (в терминале: gulp p)
+    Упаковка в zip архив для продакшена (в терминале: gulp p --zip)
+    Запуск сервера со сборкой для продакшена (в терминале: gulp p --server)
+*/
+
+gulp.task(
+
+    'p', 
+
+    gulp.series(
+
+        reset,
+        mainTasks,
+        ifCond
+    )
+);
