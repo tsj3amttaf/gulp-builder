@@ -14,11 +14,22 @@
 */
 
 export const server = (done) => {
+
     app.plugins.browsersync.init( {
+
         server: {
             baseDir: `${app.path.build.html}`
         },
-        open: false,
+
+        // открывать в браузере
+        open: true,
+
+        // ssl сертификат для https. не понятно зачем, но выглядит красиво
+        https: {
+            key: '../etc/ssl/laragon.key',
+            cert: '../etc/ssl/laragon.crt'
+        }
+
         //notify: false,
         //port: 3000
     } )
